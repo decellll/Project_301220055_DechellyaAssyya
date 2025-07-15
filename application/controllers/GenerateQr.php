@@ -14,29 +14,41 @@ class GenerateQr extends CI_Controller
 
     public function index()
     {
-        // Dummy data QR Code
-        $data['qrcodes'] = [
-            [
-                'no' => 1,
-                'code' => 'QR001-2024-01-01',
-                'title' => 'Presensi Pagi',
-                'desc' => 'QR Code untuk presensi pagi',
-                'lokasi' => 'Gedung A Lantai 1',
-                'valid_from' => '2024-01-01 07:00',
-                'valid_until' => '2024-01-01 09:00',
-            ],
-            [
-                'no' => 2,
-                'code' => 'QR002-2024-01-01',
-                'title' => 'Presensi Siang',
-                'desc' => 'QR Code untuk presensi siang',
-                'lokasi' => 'Gedung A Lantai 1',
-                'valid_from' => '2024-01-01 12:00',
-                'valid_until' => '2024-01-01 14:00',
-            ],
-        ];
+        $this->load->model('Qr_model');
+        $data['qrcodes'] = $this->Qr_model->get_all_qr_codes();
         $data['title'] = 'Generate QR Code';
         $data['user'] = $this->session->userdata();
         $this->load->view('generate_qr/index', $data);
+    }
+
+    public function create()
+    {
+        $this->load->model('Qr_model');
+        $data = [
+            'code' => $this->Qr_model->generate_unique_code(),
+            'title' => $this->input->post('title'),
+            'description' => $this->input->post('description'),
+            'location' => $this->input->post('location'),
+            'valid_from' => $this->input->post('valid_from'),
+            'valid_until' => $this->input->post('valid_until'),
+            'created_by' => $this->session->userdata('user_id'),
+            'is_active' => 1
+        ];
+        $this->Qr_model->create_qr_code($data);
+        $insert_id = $this->db->insert_id();
+        redirect('generate_qr/show/' . $insert_id);
+    }
+
+    public function show($id)
+    {
+        $this->load->model('Qr_model');
+        $qr = $this->Qr_model->get_qr_by_id($id);
+        if (!$qr) {
+            show_404();
+        }
+        $data['qr'] = $qr;
+        $data['title'] = 'Detail QR Code';
+        $data['user'] = $this->session->userdata();
+        $this->load->view('generate_qr/show', $data);
     }
 }

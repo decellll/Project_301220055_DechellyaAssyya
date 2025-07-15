@@ -59,26 +59,26 @@
         <h4 class="mb-4">Generate QR Code</h4>
         <div class="card mb-4">
             <div class="card-body">
-                <form class="row g-3">
+                <form class="row g-3" action="<?= base_url('generate_qr/create') ?>" method="post">
                     <div class="col-md-4">
                         <label class="form-label">Judul QR Code</label>
-                        <input type="text" class="form-control" placeholder="Judul QR Code">
+                        <input type="text" class="form-control" name="title" placeholder="Judul QR Code" required>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Deskripsi</label>
-                        <input type="text" class="form-control" placeholder="Deskripsi singkat">
+                        <input type="text" class="form-control" name="description" placeholder="Deskripsi singkat" required>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Lokasi</label>
-                        <input type="text" class="form-control" placeholder="Lokasi presensi">
+                        <input type="text" class="form-control" name="location" placeholder="Lokasi presensi" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Berlaku Dari</label>
-                        <input type="datetime-local" class="form-control">
+                        <input type="datetime-local" class="form-control" name="valid_from" required>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Berlaku Sampai</label>
-                        <input type="datetime-local" class="form-control">
+                        <input type="datetime-local" class="form-control" name="valid_until" required>
                     </div>
                     <div class="col-md-3 align-self-end">
                         <button type="submit" class="btn btn-generate w-100"><i class="fas fa-qrcode"></i> Generate QR</button>
@@ -101,19 +101,24 @@
                                 <th>Berlaku Dari</th>
                                 <th>Berlaku Sampai</th>
                                 <th>Aksi</th>
+                                <th>QR Code</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($qrcodes as $row): ?>
+                            <?php $no = 1;
+                            foreach ($qrcodes as $row): ?>
                                 <tr>
-                                    <td><?= $row['no'] ?></td>
-                                    <td><?= $row['code'] ?></td>
-                                    <td><?= $row['title'] ?></td>
-                                    <td><?= $row['desc'] ?></td>
-                                    <td><?= $row['lokasi'] ?></td>
-                                    <td><?= $row['valid_from'] ?></td>
-                                    <td><?= $row['valid_until'] ?></td>
-                                    <td><button class="btn btn-edit btn-sm"><i class="fas fa-edit"></i> EDIT</button></td>
+                                    <td><?= $no++ ?></td>
+                                    <td><?= htmlspecialchars($row->code) ?></td>
+                                    <td><?= htmlspecialchars($row->title) ?></td>
+                                    <td><?= htmlspecialchars($row->description) ?></td>
+                                    <td><?= htmlspecialchars($row->location) ?></td>
+                                    <td><?= htmlspecialchars($row->valid_from) ?></td>
+                                    <td><?= htmlspecialchars($row->valid_until) ?></td>
+                                    <td><?= htmlspecialchars($row->created_by_name) ?></td>
+                                    <td>
+                                        <div id="qr-<?= htmlspecialchars($row->code) ?>"></div>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -124,6 +129,16 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script>
+        <?php foreach ($qrcodes as $row): ?>
+            var qr<?= preg_replace('/[^a-zA-Z0-9]/', '', $row->code) ?> = new QRious({
+                element: document.getElementById('qr-<?= htmlspecialchars($row->code) ?>'),
+                value: "<?= htmlspecialchars($row->code) ?>",
+                size: 64
+            });
+        <?php endforeach; ?>
+    </script>
 </body>
 
 </html>

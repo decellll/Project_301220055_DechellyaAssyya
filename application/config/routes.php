@@ -68,3 +68,5 @@ $route['data_petugas'] = 'DataPetugas/index';
 $route['generate_qr'] = 'GenerateQr/index';
 $route['generate_laporan'] = 'GenerateLaporan/index';
 $route['scan-qr'] = 'scanqr/index';
+$route['generate_qr/create'] = 'GenerateQr/create';
+$route['generate_qr/show/(:num)'] = 'GenerateQr/show/$1';

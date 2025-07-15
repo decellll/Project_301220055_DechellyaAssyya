@@ -129,6 +129,19 @@ $inisial = strtoupper(substr($nama_user, 0, 1));
     <div class="container">
         <div class="scan-box">
             <h3 class="mb-4">Scan QR Code Presensi</h3>
+            <?php if (!empty($success)): ?>
+                <div class="alert alert-success"> <?= htmlspecialchars($success) ?> </div>
+            <?php endif; ?>
+            <?php if (!empty($error)): ?>
+                <div class="alert alert-danger"> <?= htmlspecialchars($error) ?> </div>
+            <?php endif; ?>
+            <?php if (!empty($redirect_report)): ?>
+                <script>
+                    setTimeout(function() {
+                        window.location.href = "<?= base_url('generate_laporan') ?>";
+                    }, 2000);
+                </script>
+            <?php endif; ?>
             <div class="mb-3">
                 <button class="btn btn-success" id="btnScanQr">Scan QR dengan Kamera</button>
             </div>
@@ -141,7 +154,10 @@ $inisial = strtoupper(substr($nama_user, 0, 1));
             <small class="text-muted">*Fitur scan QR menggunakan kamera akan aktif jika tombol di atas diklik.</small>
         </div>
         <div class="riwayat-box">
-            <h4>Riwayat Presensi Saya</h4>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h4>Riwayat Presensi Saya</h4>
+                <a href="<?= base_url('generate_laporan') ?>" class="btn btn-info">Lihat Laporan Kehadiran</a>
+            </div>
             <table class="table table-bordered mt-3 bg-white">
                 <thead>
                     <tr>
@@ -152,14 +168,20 @@ $inisial = strtoupper(substr($nama_user, 0, 1));
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($riwayat as $r): ?>
+                    <?php if (empty($riwayat)): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($r['tanggal']); ?></td>
-                            <td><?php echo htmlspecialchars($r['waktu_masuk']); ?></td>
-                            <td><?php echo htmlspecialchars($r['waktu_pulang']); ?></td>
-                            <td><?php echo htmlspecialchars($r['status']); ?></td>
+                            <td colspan="4" class="text-center text-muted">Belum ada presensi.</td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php else: ?>
+                        <?php foreach ($riwayat as $r): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($r['tanggal']); ?></td>
+                                <td><?php echo htmlspecialchars($r['waktu_masuk']); ?></td>
+                                <td><?php echo htmlspecialchars($r['waktu_pulang']); ?></td>
+                                <td><?php echo htmlspecialchars($r['status']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
